@@ -2,23 +2,10 @@
 #include <conio.h>
 #include <windows.h>
 
-  /***************************************
- / return 1 --- помилка при введенні "x" /
-/ return 2 --- помилка при введенні "y" /
-***************************************/
+double x = 0;
+double y = 0;
 
-float x = 0;
-float y = 0;
-
-char tmp_x = 0; // Перевіряє чи користувач вводить ще щось разом із цифрою
-			   //  Наприклад х = 2d || 3 d || d23d2d || 2-3 || 2*3
-
-char tmp_y = 0; // Аналогічно tmp_x
-
-char tmp_x1 = 0; // Перевіряє на відсутність цифр
-				//  Наприклад x = + || - || / || . || просто буква
-
-char tmp_y1 = 0; // Аналогічно tmp_x1
+double scanf_check_double (char printf_x);
 
 int chcp, chcpOut;
 void set_chcp();	// Зберігає значення chcp яке було до запуску програми, та встановлює підтримку UTF-8
@@ -28,36 +15,8 @@ int main(void) {
 set_chcp();
 
 printf("\r\nВведіть координати точкок:\r\n");
-
-printf("\r\nx = ");
-	tmp_x1 = scanf ("%f", &x);
-	tmp_x = getchar ();
-
-// printf("----------------------| x = %f | tmp_x1 = %d |----------------------\r\n", x, tmp_x1);	//debug
-// printf("----------------------| x = %f | tmp_x = %d |----------------------\r\n", x, tmp_x);	//debug
-
-if (tmp_x != 10 || tmp_x1 == 0)
-{
-	printf("\r\nУвага! Ви ввели неправильне значення \"x\"\r\n");
-	reset_chcp();
-	getch();
-	return 1;
-}
-
-printf("y = ");
-	tmp_y1 = scanf ("%f",&y);
-	tmp_y = getchar ();
-
-// printf("----------------------| x = %f | tmp_y1 = %d |----------------------\r\n", x, tmp_y1);	//debug
-// printf("----------------------| y = %f | tmp_y = %d |----------------------\r\n", y, tmp_y);	//debug
-
-if (tmp_y != 10 || tmp_y1 == 0)
-{
-	printf("\r\nУвага! Ви ввели неправильне значення \"y\"\r\n");
-	reset_chcp();
-	getch();
-	return 2;
-}
+	x = scanf_check_double ('x');
+	y = scanf_check_double ('y');
 
 if ((x>0) && (y>0)) printf("\r\n 1 квадрант\n");
 	else if ((x<0) && (y>0)) printf("\r\n 2 квадрант\n");
@@ -68,7 +27,6 @@ if ((x>0) && (y>0)) printf("\r\n 1 квадрант\n");
 						else if ((x<0) || (x>0) && (y==0)) printf("\r\n Точка на осі X\n");
 
 	reset_chcp();
-	getch();
 	return 0;
 }
 
@@ -77,6 +35,7 @@ void reset_chcp()
 	// Повернення значення chcp яке було до запуску програми
 	SetConsoleCP(chcp);
 	SetConsoleOutputCP(chcpOut);
+	getch();
 }
 
 void set_chcp()
@@ -89,4 +48,51 @@ void set_chcp()
 	SetConsoleCP(65001);
 	SetConsoleOutputCP(65001);
 //-------------------------------
+}
+
+//-----------------------------------------------------------------------
+double scanf_check_double (char printf_x)
+{
+
+double check_x = 0;
+unsigned char tmp_x1 = 0;
+unsigned char tmp_x = 0;
+unsigned char test = 0;
+unsigned char test2 = 0;
+
+do {
+
+test2 = 0;
+
+do {
+
+		printf("\r\n%c = ", printf_x);
+		tmp_x1 = scanf ("%lf", &check_x);
+		// printf("-----| scanf_check_double |-------| check_x = %f |--------------\r\n", check_x);	//debug
+		// printf("-----| scanf_check_double |-------| tmp_x1 = %d |--------------\r\n", tmp_x1);	//debug
+
+		tmp_x = getchar ();
+		// printf("-----| scanf_check_double |-------| tmp_x = %d [%c] |---\r\n", tmp_x, tmp_x);	//debug
+
+
+			if (tmp_x != 10 || tmp_x1 == 0)
+			{
+				printf("\r\n\nУвага! Ви ввели неправильне значення \"%c\"\r\n", printf_x);
+				getchar ();
+				break;
+
+			} else  if (check_x < (-88888888888888800) || check_x > 88888888888888800)
+					{
+						printf("\r\n\nУпс! Програма не розрахована на обчислення таких великих чисел\r\n");
+						break;
+
+					} else test = 1;
+
+test2 = 1;
+} while (test != 1);
+} while (test2 != 1);
+
+// printf("-----| scanf_check_double |-------| x = %d |---------------------\r\n", x);	//debug
+
+return check_x;
 }
